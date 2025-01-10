@@ -85,14 +85,12 @@ class LangflowClient {
 }
 
 const app = express();
-app.options('*', cors()); // Allow preflight requests for all routes
-app.use(
-    cors({
-        origin: 'https://social-media-analytics-n1bc.vercel.app/', // Your frontend URL
-        methods: 'GET,POST,PUT,DELETE,OPTIONS', // Allowed HTTP methods
-        credentials: true, // Enable if using cookies or authentication
-    })
-);
+const corsOptions ={
+    origin:'*', 
+    credentials:true,            //access-control-allow-credentials:true
+    optionSuccessStatus:200,
+ }
+ app.use(cors(corsOptions)) 
 app.use(bodyParser.json());
 
 const PORT = 3000|| process.env.PORT;
