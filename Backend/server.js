@@ -93,7 +93,7 @@ const corsOptions ={
  app.use(cors(corsOptions)) 
 app.use(bodyParser.json());
 
-const PORT = 3000|| process.env.PORT;
+const PORT = 3000 || process.env.PORT;
 const flowIdOrName = '9510d492-a745-4be6-bc78-e8a9b24f0b69';
 const langflowId = '0e9b6352-6f2b-41af-a799-34d5f8ee1c7a';
 const applicationToken = process.env.LANGFLOW_APPLICATION_TOKEN;
@@ -124,7 +124,7 @@ app.post('/runFlow', async (req, res) => {
             const firstComponentOutputs = flowOutputs.outputs[0];
             const output = firstComponentOutputs.outputs.message;
 
-            console.log('Output:', output);
+            // console.log('Output:', output);
 
             res.status(200).json({ message: output.message.text });
         } else {
@@ -138,7 +138,7 @@ app.post('/runFlow', async (req, res) => {
 
 app.get('/health', (req, res) => {
     console.log('Health Check');
-    res.send('Hello, World! Techies, Server is up and running');
+    res.send('Server is UP and running');
 });
 
 app.listen(PORT, () => {
