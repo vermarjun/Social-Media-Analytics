@@ -103,6 +103,9 @@ const langflowClient = new LangflowClient('https://api.langflow.astra.datastax.c
 
 // Endpoint to run the flow
 app.post('/runFlow', async (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     const { inputValue, inputType = 'chat', outputType = 'chat', stream = false, tweaks = {} } = req.body;
     console.log('Input:', inputValue);
 
