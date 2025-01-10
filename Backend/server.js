@@ -85,13 +85,7 @@ class LangflowClient {
 }
 
 const app = express();
-app.use(
-    cors({
-        origin: 'https://social-media-analytics-n1bc.vercel.app', // Your frontend URL
-        methods: 'GET,POST,PUT,DELETE,OPTIONS', // Allowed HTTP methods
-        credentials: true, // Enable if using cookies or authentication
-    })
-);
+app.use(cors());
 app.use(bodyParser.json());
 
 const PORT = 3000|| process.env.PORT;
