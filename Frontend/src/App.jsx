@@ -1,12 +1,7 @@
 import { useState, useEffect } from "react";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js/auto";
-import { Bar, Radar, Pie, Line } from "react-chartjs-2";
-import Markdown from 'react-markdown';
 import axios from "axios";
-ChartJS.register(ArcElement, Tooltip, Legend);
-const App = () => {
 
-  
+const App = () => {
   const [engagementData, setEngagementData] = useState({});
   const [markdownInsights, setMarkdownInsights] = useState("");
   const [input, setInput] = useState("");
@@ -17,15 +12,15 @@ const App = () => {
   const [error, setError] = useState(null);
 
   const loadingMessages = [
-    "🔍 FullStackForce is Analyzing...",
+    "🔍 CodeAstra is Analyzing...",
     "🤔 Gathering data...",
     "📊 Generating insights...",
     "✨ Almost there...",
     "🚀 Final",
     "🎉 Done!",
-    "🔥 Just lil more :)",
-    
+    "🔥 Just a little more :)",
   ];
+
   useEffect(() => {
     let messageIndex = 0;
     if (loading) {
@@ -46,7 +41,7 @@ const App = () => {
       setDarkMode(true);
     }
 
-    //health check
+    // Health check
     axios
       .get(`${import.meta.env.VITE_APP_BACKEND_URL}/health`)
       .then((response) => {
@@ -69,52 +64,53 @@ const App = () => {
     event.preventDefault();
     setLoading(true);
     console.log(input);
+
     // Fetch data and insights from Python backend
     axios
-    .post(`${import.meta.env.VITE_APP_BACKEND_URL}/runFlow`, { inputValue: input })
-    .then((response) => {
-      try {
-        console.log(response); // Log full response for debugging
-  
-        // Extract the response message
-        const jsonString = response.data?.message;
-  
-        // Initialize variables for parsed data
-        let mainString = "";
-        let parsedData = {};
-  
+      .post(`${import.meta.env.VITE_APP_BACKEND_URL}/runFlow`, { inputValue: input })
+      .then((response) => {
         try {
-          // Split and extract the JSON part from the string
-          mainString = jsonString.split("```json")[1].split("```")[0];
-  
-          // Parse the JSON string into an object
-          parsedData = JSON.parse(mainString);
-  
-          setParseSuccess(true); // Indicate successful parsing
-        } catch (parseError) {
-          console.error("Error parsing response JSON:", parseError);
-  
-          // Fall back to using the raw JSON string
-          mainString = jsonString;
-          setError(mainString);
-          setParseSuccess(false);
+          console.log(response); // Log full response for debugging
+
+          // Extract the response message
+          const jsonString = response.data?.message;
+
+          // Initialize variables for parsed data
+          let mainString = "";
+          let parsedData = {};
+
+          try {
+            // Split and extract the JSON part from the string
+            mainString = jsonString.split("json")[1].split("")[0];
+
+            // Parse the JSON string into an object
+            parsedData = JSON.parse(mainString);
+
+            setParseSuccess(true); // Indicate successful parsing
+          } catch (parseError) {
+            console.error("Error parsing response JSON:", parseError);
+
+            // Fall back to using the raw JSON string
+            mainString = jsonString;
+            setError(mainString);
+            setParseSuccess(false);
+          }
+
+          // Set state with parsed data
+          setEngagementData(parsedData[0]?.engagement_metrics || {}); // Ensure fallback if engagement_metrics is undefined
+          setMarkdownInsights(parsedData[0]?.insights || ""); // Ensure fallback if insights is undefined
+        } catch (error) {
+          console.error("Unexpected error while processing response:", error);
+        } finally {
+          setLoading(false); // Stop loading in all cases
         }
-  
-        // Set state with parsed data
-        setEngagementData(parsedData[0]?.engagement_metrics || {}); // Ensure fallback if engagement_metrics is undefined
-        setMarkdownInsights(parsedData[0]?.insights || ""); // Ensure fallback if insights is undefined
-      } catch (error) {
-        console.error("Unexpected error while processing response:", error);
-      } finally {
-        setLoading(false); // Stop loading in all cases
-      }
-    })
-    .catch((error) => {
-      setLoading(false); // Stop loading on request failure
-      console.error("Error fetching data:", error);
-      alert("Error fetching data. Please try again later. " + error.message);
-    });
-  };  
+      })
+      .catch((error) => {
+        setLoading(false); // Stop loading on request failure
+        console.error("Error fetching data:", error);
+        alert("Error fetching data. Please try again later. " + error.message);
+      });
+  };
 
   // Extract data for charts
   const labels = Object.keys(engagementData); // post types: 'carousel', 'reels', 'static_image'
@@ -154,9 +150,7 @@ const App = () => {
 
   return (
     <div
-      className={
-        darkMode ? "dark bg-gray-900 text-white" : "bg-white text-black"
-      }
+      className={darkMode ? "dark bg-gray-900 text-white" : "bg-white text-black"}
     >
       <div className="container mx-auto p-6">
         {/* Theme Toggle Switch */}
@@ -181,7 +175,7 @@ const App = () => {
           disabled={loading}
         />
         <p className="text-sm text-gray-500 mb-4">
-          &bull; Available Post Types: <b> carousel, reels, static_image,image,video,text, & text_post</b>
+          &bull; Available Post Types: <b> carousel, reels, static_image, image, video, text, & text_post</b>
         </p>
         <button
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mx-auto w-full"
@@ -198,150 +192,152 @@ const App = () => {
               <div className="w-2 h-6 bg-blue-500 animate-pulse delay-75"></div>
               <div className="w-2 h-6 bg-blue-500 animate-pulse delay-150"></div>
             </div>
-            <p className="text-xl font-semibold">{loadingMessage}</p>
+            <p className="text-xl font-semibold text-white">{loadingMessage}</p>
           </div>
-        ) : ( <>
-        <h1 className="text-3xl font-bold text-center">
-          Social Media Engagement Analysis Report  <br />Using LangFlow and DataStax Astra DB!!!
-        </h1>
-        <h2 className="text-2xl text-center mb-8">
-          (Pre-Hackathon Assignment by Team- <b> FullStackForce🔥🧑🏻‍💻</b>)
-        </h2>
-        {parseSuccess && Object.keys(engagementData).length > 0 ? (
+        ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-8">
-              {/* Bar Chart */}
-              <div className={` ${darkMode ? "bg-gray-800 text-white" : "bg-gray-100"} shadow-md rounded-lg p-6`}>
-                <h2 className="text-xl font-semibold mb-4 text-center">
-                  Bar Chart
-                </h2>
-                <Bar data={barData} style={{color: darkMode ? "white" : "black"}} />
-              </div>
-              {/* Radar Chart */}
-              <div className={` ${darkMode ? "bg-gray-800 text-white" : "bg-gray-100"} shadow-md rounded-lg p-6`}>
-                <h2 className="text-xl font-semibold mb-4 text-center">
-                  Radar Chart
-                </h2>
-                <Radar data={barData} />
-              </div>
+            <h1 className="text-3xl font-bold text-center">
+              Social Media Engagement Analysis Report  <br />Using LangFlow and DataStax Astra DB!!!
+            </h1>
+            <h2 className="text-2xl text-center mb-8">
+              (Pre-Hackathon Assignment by Team- <b> CodeAstra🔥🧑🏻‍💻</b>)
+            </h2>
+            {parseSuccess && Object.keys(engagementData).length > 0 ? (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-8">
+                  {/* Bar Chart */}
+                  <div className={` ${darkMode ? "bg-gray-800 text-white" : "bg-gray-100"} shadow-md rounded-lg p-6`}>
+                    <h2 className="text-xl font-semibold mb-4 text-center">
+                      Bar Chart
+                    </h2>
+                    <Bar data={barData} style={{ color: darkMode ? "white" : "black" }} />
+                  </div>
+                  {/* Radar Chart */}
+                  <div className={` ${darkMode ? "bg-gray-800 text-white" : "bg-gray-100"} shadow-md rounded-lg p-6`}>
+                    <h2 className="text-xl font-semibold mb-4 text-center">
+                      Radar Chart
+                    </h2>
+                    <Radar data={barData} />
+                  </div>
 
-              {/* Pie Chart */}
+                  {/* Pie Chart */}
 
-              <div className={` ${darkMode ? "bg-gray-800 text-white" : "bg-gray-100"} shadow-md rounded-lg p-6`}>
-                <h2 className="text-xl font-semibold mb-4 text-center">
-                  Pie Chart (Likes)
-                </h2>
-                <Pie
-                  data={{
-                    labels: labels,
-                    datasets: [
-                      {
-                        label: "Engagement Distribution (Likes)",
-                        data: likesData,
-                        backgroundColor: [
-                          "rgba(75, 192, 192, 0.2)",
-                          "rgba(153, 102, 255, 0.2)",
-                          "rgba(255, 159, 64, 0.2)",
+                  <div className={` ${darkMode ? "bg-gray-800 text-white" : "bg-gray-100"} shadow-md rounded-lg p-6`}>
+                    <h2 className="text-xl font-semibold mb-4 text-center">
+                      Pie Chart (Likes)
+                    </h2>
+                    <Pie
+                      data={{
+                        labels: labels,
+                        datasets: [
+                          {
+                            label: "Engagement Distribution (Likes)",
+                            data: likesData,
+                            backgroundColor: [
+                              "rgba(75, 192, 192, 0.2)",
+                              "rgba(153, 102, 255, 0.2)",
+                              "rgba(255, 159, 64, 0.2)",
+                            ],
+                            borderColor: [
+                              "rgba(75, 192, 192, 1)",
+                              "rgba(153, 102, 255, 1)",
+                              "rgba(255, 159, 64, 1)",
+                            ],
+                            borderWidth: 1,
+                          },
                         ],
-                        borderColor: [
-                          "rgba(75, 192, 192, 1)",
-                          "rgba(153, 102, 255, 1)",
-                          "rgba(255, 159, 64, 1)",
+                      }}
+                    />
+                  </div>
+                  {/* Pie Chart */}
+                  <div className={` ${darkMode ? "bg-gray-800 text-white" : "bg-gray-100"} shadow-md rounded-lg p-6`}>
+                    <h2 className="text-xl font-semibold mb-4 text-center">
+                      Pie Chart (Comments)
+                    </h2>
+                    <Pie
+                      data={{
+                        labels: labels,
+                        datasets: [
+                          {
+                            label: "Engagement Distribution (Comments)",
+                            data: commentsData,
+                            backgroundColor: [
+                              "rgba(75, 192, 192, 0.2)",
+                              "rgba(153, 102, 255, 0.2)",
+                              "rgba(255, 159, 64, 0.2)",
+                            ],
+                            borderColor: [
+                              "rgba(75, 192, 192, 1)",
+                              "rgba(153, 102, 255, 1)",
+                              "rgba(255, 159, 64, 1)",
+                            ],
+                            borderWidth: 1,
+                          },
                         ],
-                        borderWidth: 1,
-                      },
-                    ],
-                  }}
-                />
-              </div>
-              {/* Pie Chart */}
-              <div className={` ${darkMode ? "bg-gray-800 text-white" : "bg-gray-100"} shadow-md rounded-lg p-6`}>
-                <h2 className="text-xl font-semibold mb-4 text-center">
-                  Pie Chart (Comments)
-                </h2>
-                <Pie
-                  data={{
-                    labels: labels,
-                    datasets: [
-                      {
-                        label: "Engagement Distribution (Comments)",
-                        data: commentsData,
-                        backgroundColor: [
-                          "rgba(75, 192, 192, 0.2)",
-                          "rgba(153, 102, 255, 0.2)",
-                          "rgba(255, 159, 64, 0.2)",
+                      }}
+                    />
+                  </div>
+                  {/* Pie Chart */}
+                  <div className={` ${darkMode ? "bg-gray-800 text-white" : "bg-gray-100"} shadow-md rounded-lg p-6`}>
+                    <h2 className="text-xl font-semibold mb-4 text-center">
+                      Pie Chart (Shares)
+                    </h2>
+                    <Pie
+                      data={{
+                        labels: labels,
+                        datasets: [
+                          {
+                            label: "Engagement Distribution (Shares)",
+                            data: sharesData,
+                            backgroundColor: [
+                              "rgba(75, 192, 192, 0.2)",
+                              "rgba(153, 102, 255, 0.2)",
+                              "rgba(255, 159, 64, 0.2)",
+                            ],
+                            borderColor: [
+                              "rgba(75, 192, 192, 1)",
+                              "rgba(153, 102, 255, 1)",
+                              "rgba(255, 159, 64, 1)",
+                            ],
+                            borderWidth: 1,
+                          },
                         ],
-                        borderColor: [
-                          "rgba(75, 192, 192, 1)",
-                          "rgba(153, 102, 255, 1)",
-                          "rgba(255, 159, 64, 1)",
-                        ],
-                        borderWidth: 1,
-                      },
-                    ],
-                  }}
-                />
-              </div>
-              {/* Pie Chart */}
-              <div className={` ${darkMode ? "bg-gray-800 text-white" : "bg-gray-100"} shadow-md rounded-lg p-6`}>
-                <h2 className="text-xl font-semibold mb-4 text-center">
-                  Pie Chart (Shares)
-                </h2>
-                <Pie
-                  data={{
-                    labels: labels,
-                    datasets: [
-                      {
-                        label: "Engagement Distribution (Shares)",
-                        data: sharesData,
-                        backgroundColor: [
-                          "rgba(75, 192, 192, 0.2)",
-                          "rgba(153, 102, 255, 0.2)",
-                          "rgba(255, 159, 64, 0.2)",
-                        ],
-                        borderColor: [
-                          "rgba(75, 192, 192, 1)",
-                          "rgba(153, 102, 255, 1)",
-                          "rgba(255, 159, 64, 1)",
-                        ],
-                        borderWidth: 1,
-                      },
-                    ],
-                  }}
-                />
-              </div>
+                      }}
+                    />
+                  </div>
 
-              {/* Line Chart */}
-              <div className={` ${darkMode ? "bg-gray-800 text-white" : "bg-gray-100"} shadow-md rounded-lg p-6  md:col-span-2 xl:col-span-2`}>
-                <h2 className="text-xl font-semibold mb-4 text-center">
-                  Line Chart
-                </h2>
-                <Line data={barData} />
-              </div>
-            </div>
+                  {/* Line Chart */}
+                  <div className={` ${darkMode ? "bg-gray-800 text-white" : "bg-gray-100"} shadow-md rounded-lg p-6  md:col-span-2 xl:col-span-2`}>
+                    <h2 className="text-xl font-semibold mb-4 text-center">
+                      Line Chart
+                    </h2>
+                    <Line data={barData} />
+                  </div>
+                </div>
 
-            {/* Insights Section */}
-            <div className={` ${darkMode ? "bg-gray-800 text-white" : "bg-gray-100"} shadow-md rounded-lg p-6 mt-8 w-5/6 mx-auto`}>
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold mb-4 text-center font-mono">
-                Insights (By LangFlow + Gemini✨)
-              </h2>
-              <Markdown className="prose font-serif text-lg md:text-xl lg:text-2xl">{markdownInsights}</Markdown>
-            </div>
+                {/* Insights Section */}
+                <div className={` ${darkMode ? "bg-gray-800 text-white" : "bg-gray-100"} shadow-md rounded-lg p-6 mt-8 w-5/6 mx-auto`}>
+                  <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold mb-4 text-center font-mono">
+                    Insights (By LangFlow + Gemini✨)
+                  </h2>
+                  <Markdown className="prose font-serif text-lg md:text-xl lg:text-2xl">{markdownInsights}</Markdown>
+                </div>
+              </>
+            ) : (
+              <>
+                <h2 className="text-2xl font-semibold mb-4 text-center">Please Enter a Valid Keyword to Display Analytics...</h2>
+                <div className={` ${darkMode ? "bg-gray-800 text-white" : "bg-gray-100"} shadow-md rounded-lg p-6`}>
+                  <p className="text-lg font-semibold text-white">
+                    Server Response: <b>  {error}</b>
+                  </p>
+                </div>
+              </>
+            )}
           </>
-        ): (<>
-          <h2 className="text-2xl font-semibold mb-4 text-center">Please Enter a Valid Keyword to Display Analytics...</h2>
-          <div className={` ${darkMode ? "bg-gray-800 text-white" : "bg-gray-100"} shadow-md rounded-lg p-6`}>
-            <p className="text-lg font-semibold text-red-500">
-            Server Response: <b>  {error}</b>
-            </p>
-          </div>
-          </>)}
-        </> )}
+        )}
       </div>
-      
     </div>
   );
 };
 
 export default App;
-
