@@ -85,9 +85,10 @@ class LangflowClient {
 }
 
 const app = express();
+app.options('*', cors()); // Allow preflight requests for all routes
 app.use(
     cors({
-        origin: 'https://social-media-analytics-n1bc.vercel.app', // Your frontend URL
+        origin: 'https://social-media-analytics-n1bc.vercel.app/', // Your frontend URL
         methods: 'GET,POST,PUT,DELETE,OPTIONS', // Allowed HTTP methods
         credentials: true, // Enable if using cookies or authentication
     })
