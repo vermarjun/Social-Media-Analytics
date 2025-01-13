@@ -85,10 +85,11 @@ class LangflowClient {
 }
 
 const app = express();
+
 app.use(cors());
 app.use(bodyParser.json());
 
-const PORT = 3000|| process.env.PORT;
+const PORT = 3000 || process.env.PORT;
 const flowIdOrName = '9510d492-a745-4be6-bc78-e8a9b24f0b69';
 const langflowId = '0e9b6352-6f2b-41af-a799-34d5f8ee1c7a';
 const applicationToken = process.env.LANGFLOW_APPLICATION_TOKEN;
@@ -97,6 +98,9 @@ const langflowClient = new LangflowClient('https://api.langflow.astra.datastax.c
 
 // Endpoint to run the flow
 app.post('/runFlow', async (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     const { inputValue, inputType = 'chat', outputType = 'chat', stream = false, tweaks = {} } = req.body;
     console.log('Input:', inputValue);
 
@@ -119,7 +123,7 @@ app.post('/runFlow', async (req, res) => {
             const firstComponentOutputs = flowOutputs.outputs[0];
             const output = firstComponentOutputs.outputs.message;
 
-            console.log('Output:', output);
+            // console.log('Output:', output);
 
             res.status(200).json({ message: output.message.text });
         } else {
@@ -133,9 +137,5 @@ app.post('/runFlow', async (req, res) => {
 
 app.get('/health', (req, res) => {
     console.log('Health Check');
-    res.send('Hello, World! Techies, Server is up and running');
-});
-
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-});
+    res.send('Server is UP and running');
+})
