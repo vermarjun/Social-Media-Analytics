@@ -85,12 +85,7 @@ class LangflowClient {
 }
 
 const app = express();
-app.use(cors(
-    {
-        origin: '*',
-        methods: ['GET', 'POST'],
-    }
-));
+app.use(cors());
 app.use(bodyParser.json());
 
 const PORT = 3000|| process.env.PORT;
